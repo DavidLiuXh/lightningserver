@@ -1,1 +1,0 @@
-/home/lw/mycode/lightningserver/util/CMakeFiles/LightningServer.dir
