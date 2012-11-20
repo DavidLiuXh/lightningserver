@@ -140,7 +140,8 @@ ELSE (WIN32)
      ADD_DEFINITIONS(
                     )
 
-     ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_ALL_FILES})
+    LINK_DIRECTORIES(../lib/debug)
+    ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_ALL_FILES})
 
      IF(CMAKE_HOST_APPLE)
         SET(CMAKE_FIND_LIBRARY_SUFFIXES .dylib)
@@ -155,8 +156,8 @@ ELSE (WIN32)
      FIND_LIBRARY(EVENT_LIB NAMES event PATHS /usr/local/lib )
      MESSAGE(STATUS "libevent lib path: ${EVENT_LIB}")
 
-     FIND_LIBRARY(LIGHTNINGSERVER_LIB NAMES LightningServer PATHS ../lib/debug )
-     MESSAGE(STATUS "lightningserver lib path: ${LIGHTNINGSERVER_LIB}")
+     #FIND_LIBRARY(LIGHTNINGSERVER_LIB NAMES LightningServer PATHS ../lib/debug )
+     #MESSAGE(STATUS "lightningserver lib path: ${LIGHTNINGSERVER_LIB}")
      
      SET(Boost_USE_STATIC_LIBS OFF)
      SET(Boost_USE_MULTITHREADED ON)
@@ -168,7 +169,7 @@ ELSE (WIN32)
                             ${Boost_LIBRARIES}
                             ${LOG4CPLUS_LIB}
                             ${EVENT_LIB}
-                            ${LIGHTNINGSERVER_LIB}
+                            LightningServer#${LIGHTNINGSERVER_LIB}
                             stdc++
                             )
      ENDIF()
