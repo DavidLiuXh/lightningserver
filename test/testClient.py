@@ -141,14 +141,14 @@ def testFunc():
     ftm += str(len(Msg))
     ftm += 's'
     data = struct.pack(ftm, len(Msg), Msg)
-    for i in range(1):
+    for i in range(10):
         sock.send(data)  
         print sock.recv(12)  
-    time.sleep(2)  
+    #time.sleep(2)  
     sock.close()  
 
 def threadTest():
-    #for i in range(30):
+    for i in range(30):
         t = threading.Thread(target=testFunc)
         t.start()
 
