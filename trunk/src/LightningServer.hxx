@@ -1,6 +1,8 @@
 #ifndef LIGHTNING_SERVER_HXX
 #define LIGHTNING_SERVER_HXX
 
+#include "version.hxx"
+
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 //-------------------------------------------------
@@ -26,6 +28,14 @@ namespace Lightning
             ~LightningServer();
 
         public:
+            const char* getVersion()
+            {
+                return CURRENT_VERSION;
+            }
+            void setDebugRunMode(bool isDebug)
+            {
+                mIsDebugMode = isDebug;
+            }
             bool regSessionHandler(SessionHandlerPtrType sessionHandler);
             void start(const char* ip, int port);
             void stop();
@@ -44,6 +54,8 @@ namespace Lightning
 
             boost::shared_ptr<event_base> mEventBase;
             boost::scoped_ptr<LightningServerProcessor> mLSProcessor;
+
+            bool mIsDebugMode;
 
     };//class LightningServer
 
