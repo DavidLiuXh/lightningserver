@@ -1,6 +1,6 @@
 #include "datastreamhandler.hxx"
 
-#include "userrequest.hxx"
+#include "userrequestwithheader.hxx"
 
 #include "util/logger.hxx"
 
