@@ -109,6 +109,7 @@ LightningServer::LightningServer(UserRequestFactoryPtrType userRequestFactory,
             const char* logPath)
 :mRequestFactory(userRequestFactory)
     ,mResponseFactory(userResponseFactory)
+    ,mIsDebugMode(false)
 {
     initLog(logPath);
 }
@@ -149,7 +150,9 @@ void LightningServer::initLog(const char* path)
 {
     if (LUtil::StrUtil::notEmptyOrNull(path))
     {
-        LUtil::Logger::init(LUtil::Logger::LL_ALL, path);
+        LUtil::Logger::init(
+                    mIsDebugMode ? LUtil::Logger::LL_ALL : LUtil::Logger::LL_INFO,
+                    path);
     }
 }
 
