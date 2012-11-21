@@ -142,7 +142,7 @@ def testFunc():
     ftm += 's'
     data = struct.pack(ftm, len(Msg), Msg)
     for i in range(1):
-        #sock.send(data)  
+        sock.send(data)  
         print sock.recv(12)  
     #time.sleep(2)  
     sock.close()  

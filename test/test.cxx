@@ -21,8 +21,11 @@ class MySessionHandler
         }
         
         void onRequest(int sid, const boost::shared_ptr<UserRequest>& request,
-                    boost::shared_ptr<UserResponse>& response)
+                    boost::shared_ptr<UserResponse>& response,
+                    bool& isContinue)
         {
+            isContinue = false;
+
             std::string data("Hello World");
             if (response)
             {
