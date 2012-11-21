@@ -1,6 +1,6 @@
 #include "../src/LightningServer.hxx"
 #include "../src/sessionHandler.hxx"
-#include "../src/userrequest.hxx"
+#include "../src/userrequestwithheader.hxx"
 #include "../src/userresponse.hxx"
 #include "../util/logger.hxx"
 
