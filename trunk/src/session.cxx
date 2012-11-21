@@ -118,8 +118,6 @@ bool Session::init(event_base* eb,
                         SessionUtil::onBufferEventWrite,
                         SessionUtil::onBuffereventEvent,
                         this);
-            bufferevent_set_timeouts(mBufferEvent.get(),
-                        );
             mUserRequest = userRequest;
             initDataHandler();
             rt = true;

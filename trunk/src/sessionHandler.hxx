@@ -20,7 +20,8 @@ namespace Lightning
         public:
             virtual void onStart(int sid, const SessionInfo& sessionInfo) = 0;
             virtual void onRequest(int sid, const boost::shared_ptr<UserRequest>& request,
-                        boost::shared_ptr<UserResponse>& response) = 0;
+                        boost::shared_ptr<UserResponse>& response,
+                        bool& isContinue) = 0;
             virtual void onEnded(int sid) = 0;
             virtual void onError(int sid, SessionErrorCode code) = 0;
     };

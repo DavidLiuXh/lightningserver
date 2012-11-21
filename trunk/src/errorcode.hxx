@@ -8,6 +8,7 @@ namespace Lightning
         SEC_ERROR,
         SEC_READ_TIMEOUT,
         SEC_WRITE_TIMEOUT,
+        SEC_USER_CANCEL,
     };
 
 }//namespace Lightning

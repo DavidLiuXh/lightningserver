@@ -346,9 +346,18 @@ void LightningServerProcessor::processRequestTask(const boost::shared_ptr<Proces
         {
             boost::shared_ptr<Session> session = task->getSession();
             boost::shared_ptr<UserResponse> response = responseFactory->create();
+            
+            bool isContinue = true;
             sessonHandler->onRequest((session ? session->getSessionId() : 0),
                         task->getRequest(),
-                        response);
+                        response,
+                        isContinue);
+            if (!isContinue)
+            {
+                sessonHandler->onError(session->getSessionId(), SEC_USER_CANCEL);
+                mSessionManager->removedSession(session);
+                return;
+            }
 
             Response* responseTask = new Response();
             if (NULL != responseTask)
