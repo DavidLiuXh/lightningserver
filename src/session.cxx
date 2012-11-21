@@ -57,17 +57,10 @@ class Session::SessionUtil
                     INFO(__FUNCTION__ << " | client fd close");
                     me->OnClientFdClosed(me->shared_from_this());
                 }
-                else if (what & BEV_EVENT_WRITING &&
-                            what & BEV_EVENT_ERROR)
+                else if (what & BEV_EVENT_ERROR)
                 {
-                    INFO(__FUNCTION__ << " | Error Write");
-                    me->OnError(me->shared_from_this(), SEC_WRITE_ERROR);
-                }
-                else if (what & BEV_EVENT_READING &&
-                            what & BEV_EVENT_ERROR)
-                {
-                    INFO(__FUNCTION__ << " | Error Read");
-                    me->OnError(me->shared_from_this(), SEC_READ_ERROR);
+                    INFO(__FUNCTION__ << " | Error");
+                    me->OnError(me->shared_from_this(), SEC_ERROR);
                 }
                 else if (what & BEV_EVENT_WRITING &&
                             what & BEV_EVENT_TIMEOUT)
@@ -125,6 +118,8 @@ bool Session::init(event_base* eb,
                         SessionUtil::onBufferEventWrite,
                         SessionUtil::onBuffereventEvent,
                         this);
+            bufferevent_set_timeouts(mBufferEvent.get(),
+                        );
             mUserRequest = userRequest;
             initDataHandler();
             rt = true;
