@@ -6,16 +6,15 @@
 
 using namespace Lightning;
 //-----------------------------------------------------------
-boost::shared_ptr<DataHandler> DataHandlerFactory::create(DataHandlerType type,
-            boost::shared_ptr<UserRequest> request)
+boost::shared_ptr<DataHandler> DataHandlerFactory::create(RequestType type)
 {
     boost::shared_ptr<DataHandler> dataHandler;
 
     switch (type)
     {
-        case DHT_STREAM_WITH_HEADER:
+        case RT_STREAM_WITH_HEADER:
             {
-                dataHandler.reset(new DataStreamHandler(request));
+                dataHandler.reset(new DataStreamHandler());
             }
             break;
         default:

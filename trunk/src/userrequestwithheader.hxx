@@ -12,6 +12,7 @@ namespace Lightning
             virtual ~UserRequestWithHeader() {}
             
         public:
+            virtual RequestType getType() { return RT_STREAM_WITH_HEADER; }
             virtual size_t getHeaderSize() const = 0;
             virtual bool setHeader(const char* header, size_t length) = 0;
             virtual bool setBody(const char* body, size_t length) = 0;

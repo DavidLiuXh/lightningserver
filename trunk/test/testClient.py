@@ -133,7 +133,17 @@ Msg = '''  "media" : [
    ]
 }'''
 
-def testFunc():
+def testNoSnedBody():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+    sock.connect(('localhost', 6666))  
+    ftm = 'i'
+    ftm += str(len(Msg))
+    data = struct.pack(ftm, len(Msg))
+    for i in range(1):
+        sock.send(data)
+    sock.close()  
+
+def testSendRequestWithHeaderFunc():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
     sock.connect(('localhost', 6666))  
     #time.sleep(2)  
@@ -141,15 +151,14 @@ def testFunc():
     ftm += str(len(Msg))
     ftm += 's'
     data = struct.pack(ftm, len(Msg), Msg)
-    for i in range(1):
-        sock.send(data)  
+    for i in range(10):
+        sock.send(data)
         print sock.recv(12)  
-    #time.sleep(2)  
     sock.close()  
 
 def threadTest():
-    #for i in range(30):
-        t = threading.Thread(target=testFunc)
+    for i in range(30):
+        t = threading.Thread(target=testSendRequestWithHeaderFunc)
         t.start()
 
 if __name__ == '__main__':

@@ -88,6 +88,7 @@ bool LightningServerProcessor::initSession(evutil_socket_t fd,
     bool rt = false;
 
     session.reset(new Session(
+                    mRequestFactory,
                     fd,
                     inet_ntoa(addr.sin_addr)));
     if (session)
@@ -311,8 +312,7 @@ void LightningServerProcessor::processStartTask(const boost::shared_ptr<ProcessQ
             sessonHandler->onStart(session->getSessionId(),
                         session->getInfo());
 
-            session->init(mEventBase.lock().get(),
-                        mRequestFactory.lock()->create());
+            session->init(mEventBase.lock().get());
             session->startAction(EV_READ | EV_WRITE);
         }
     }

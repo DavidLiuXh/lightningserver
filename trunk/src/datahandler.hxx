@@ -20,6 +20,7 @@ namespace Lightning
 
         public:
             virtual void pushData(evbuffer* buffer) = 0;
+            virtual void setUserRequest(boost::shared_ptr<UserRequest> request) = 0;
         
         public:
             RecvRequestFinishedNotifyEvent OnRecvRequestFinished;

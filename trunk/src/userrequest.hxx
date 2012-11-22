@@ -1,6 +1,8 @@
 #ifndef LIGHTNGING_USERREQUEST_HXX
 #define LIGHTNGING_USERREQUEST_HXX
 
+#include "requesttype.hxx"
+
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -13,6 +15,7 @@ namespace Lightning
         public:
             virtual ~UserRequest() {}
             virtual std::string toString() = 0;
+            virtual RequestType getType() = 0;
         public:
     };//class UserRequest
 

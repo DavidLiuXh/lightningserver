@@ -7,19 +7,23 @@
 #include <boost/scoped_array.hpp>
 using namespace Lightning;
 //-----------------------------------------------
-DataStreamHandler::DataStreamHandler(boost::shared_ptr<UserRequest> request)
+DataStreamHandler::DataStreamHandler()
 :mHeaderSize(0)
 ,mBodySize(0)
 ,mStep(PS_HEADER)
-,mUserRequest(boost::shared_dynamic_cast<UserRequestWithHeader>(request))
 {
+    initEvBuffer();
+}
+//-----------------------------------------------
+void DataStreamHandler::setUserRequest(boost::shared_ptr<UserRequest> request)
+{
+    mUserRequest = boost::shared_dynamic_cast<UserRequestWithHeader>(request);
     if (mUserRequest)
     {
         mHeaderSize = mUserRequest->getHeaderSize();
     }
-    initEvBuffer();
 }
-//-----------------------------------------------
+
 void DataStreamHandler::pushData(evbuffer* buffer)
 {
     bool needContinue = true;
@@ -34,14 +38,17 @@ void DataStreamHandler::pushData(evbuffer* buffer)
                 {
                     if (!recvHeader())
                     {
+                        DEBUG(__FUNCTION__ << " | cotinue recv header");
                         needContinue = false;
                     }
                     else if (recvBody())
                     {
+                        DEBUG(__FUNCTION__ << " | ok to recv body");
                         needContinue = true;
                     }
                     else
                     {
+                        DEBUG(__FUNCTION__ << " | ok to recv header and cotinue recv body");
                         mStep = PS_BODY;
                         needContinue = false;
                     }
@@ -51,11 +58,13 @@ void DataStreamHandler::pushData(evbuffer* buffer)
                 {
                     if (recvBody())
                     {
+                        DEBUG(__FUNCTION__ << " | ok to recv body");
                         mStep = PS_HEADER;
                         needContinue = true;
                     }
                     else
                     {
+                        DEBUG(__FUNCTION__ << " | continue recv body");
                         needContinue = false;
                     }
                 }
@@ -70,6 +79,7 @@ bool DataStreamHandler::recvHeader()
     bool needContinue = true;
 
     size_t totalSize = evbuffer_get_length(mCache.get());
+    DEBUG(__FUNCTION__ << " | current total size of evbuufer : " << totalSize);
     if (totalSize < mHeaderSize)
     {
         needContinue = false;
@@ -92,6 +102,7 @@ bool DataStreamHandler::recvBody()
     bool needContinue = false;
 
     size_t totalSize = evbuffer_get_length(mCache.get());
+    DEBUG(__FUNCTION__ << " | current total size of evbuufer : " << totalSize);
     if (totalSize >= mBodySize)
     {
         boost::scoped_array<char> body(new char[mBodySize]);
