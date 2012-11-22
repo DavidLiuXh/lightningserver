@@ -24,6 +24,7 @@ namespace Lightning
         public:
             LightningServer(UserRequestFactoryPtrType userReuqestFactory,
                         UserResponseFactoryPtrType userResponseFactory,
+                        bool isDebugMode,
                         const char* logPath);
             ~LightningServer();
 
@@ -32,10 +33,7 @@ namespace Lightning
             {
                 return CURRENT_VERSION;
             }
-            void setDebugRunMode(bool isDebug)
-            {
-                mIsDebugMode = isDebug;
-            }
+
             bool regSessionHandler(SessionHandlerPtrType sessionHandler);
             void start(const char* ip, int port);
             void stop();

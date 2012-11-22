@@ -54,6 +54,7 @@ SET(PROJECT_ALL_FILES
 ./IoUtil.cxx
 ./sessioninfo.cxx
 ./datastreamhandler.cxx
+./datalinehandler.cxx
 ./datahandlerfactory.cxx
 ./session.cxx
 ./sessionmanager.cxx

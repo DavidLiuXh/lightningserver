@@ -2,6 +2,8 @@
 #define LIGHTNING_SESSION_HXX
 
 #include "errorcode.hxx"
+#include "requesttype.hxx"
+
 #include <event.h>
 
 #include <boost/shared_ptr.hpp>
@@ -16,7 +18,7 @@ namespace Lightning
     struct SessionInfo;
     class DataHandler;
     class UserRequest;
-    //enum SessionErrorCode;
+    class UserRequestFactory;
   
     class Session
         :public boost::enable_shared_from_this<Session>
@@ -29,14 +31,15 @@ namespace Lightning
             typedef boost::function<void (boost::shared_ptr<Session>, Lightning::SessionErrorCode)> ErrorNotify;
 
         public:
-            Session(evutil_socket_t fd, const char* ip);
+            Session(boost::weak_ptr<UserRequestFactory> mRequestFactory,
+                        evutil_socket_t fd,
+                        const char* ip);
             ~Session();
 
             std::ostream& toString(std::ostream& os) const;
 
         public:
-            bool init(event_base* eb,
-                        UserRequestPtrType userRequest);
+            bool init(event_base* eb);
             void uninit();
             void startAction(short what);
             const SessionInfo& getInfo() const { return *mSessionInfo; }
@@ -56,6 +59,7 @@ namespace Lightning
             class SessionUtil;
 
         private:
+            boost::weak_ptr<UserRequestFactory> mUserRequestFactory;
             boost::shared_ptr<SessionInfo> mSessionInfo;
             boost::shared_ptr<DataHandler> mDataStreamHandler;
             boost::shared_ptr<bufferevent> mBufferEvent;

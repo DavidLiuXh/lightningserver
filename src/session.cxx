@@ -78,9 +78,11 @@ class Session::SessionUtil
         }
 };
 //-------------------------------------------------
-Session::Session(evutil_socket_t fd,
+Session::Session(boost::weak_ptr<UserRequestFactory> mRequestFactory,
+            evutil_socket_t fd,
             const char* ip)
-:mSessionInfo(new SessionInfo(fd, ip))
+:mUserRequestFactory(mRequestFactory)
+,mSessionInfo(new SessionInfo(fd, ip))
 ,mSessionId(0)
 {
 }
@@ -99,8 +101,7 @@ const Session::SessionIdType Session::getSessionId()
     return id;
 }
 
-bool Session::init(event_base* eb,
-            UserRequestPtrType userRequest)
+bool Session::init(event_base* eb)
 {
     bool rt = false;
 
@@ -118,7 +119,6 @@ bool Session::init(event_base* eb,
                         SessionUtil::onBufferEventWrite,
                         SessionUtil::onBuffereventEvent,
                         this);
-            mUserRequest = userRequest;
             initDataHandler();
             rt = true;
         }
@@ -133,16 +133,23 @@ bool Session::init(event_base* eb,
 
 void Session::initDataHandler()
 {
-    mDataStreamHandler = DataHandlerFactory::create(
-                DataHandlerFactory::DHT_STREAM_WITH_HEADER,
-                mUserRequest);
-    if (mDataStreamHandler)
+    UserRequestFactoryPtrType userRequestFactory = mUserRequestFactory.lock();
+    if (userRequestFactory)
     {
-        mDataStreamHandler->OnRecvRequestFinished = boost::bind(
-                    &Session::onRecvRequestFinished,
-                    this,
-                    _1,
-                    _2);
+        UserRequestPtrType userRequest = userRequestFactory->create();
+        if (userRequest)
+        {
+            mDataStreamHandler = DataHandlerFactory::create(userRequest->getType());
+            if (mDataStreamHandler)
+            {
+                mDataStreamHandler->setUserRequest(userRequest);
+                mDataStreamHandler->OnRecvRequestFinished = boost::bind(
+                            &Session::onRecvRequestFinished,
+                            this,
+                            _1,
+                            _2);
+            }
+        }
     }
 }
 
@@ -169,6 +176,17 @@ void Session::onRecvRequestFinished(DataHandler*, UserRequestPtrType request)
 {
     DEBUG(__FUNCTION__);
     OnRecvRequestFinished(shared_from_this(), request);
+    
+    UserRequestFactoryPtrType userRequestFactory = mUserRequestFactory.lock();
+    if (userRequestFactory &&
+                mDataStreamHandler)
+    {
+        UserRequestPtrType userRequest = userRequestFactory->create();
+        if (userRequest)
+        {
+            mDataStreamHandler->setUserRequest(userRequest);
+        }
+    }
 }
 //---------------------------------------
 std::ostream& Session::toString(std::ostream& os) const

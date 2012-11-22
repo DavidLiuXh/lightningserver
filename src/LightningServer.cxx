@@ -106,10 +106,11 @@ class LightningServerUtil
 //------------------------------------------------------------------class LightningServer
 LightningServer::LightningServer(UserRequestFactoryPtrType userRequestFactory,
             UserResponseFactoryPtrType userResponseFactory,
+            bool isDebugMode,
             const char* logPath)
 :mRequestFactory(userRequestFactory)
     ,mResponseFactory(userResponseFactory)
-    ,mIsDebugMode(false)
+    ,mIsDebugMode(isDebugMode)
 {
     initLog(logPath);
 }

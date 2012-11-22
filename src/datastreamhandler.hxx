@@ -3,7 +3,7 @@
 
 #include "datahandler.hxx"
 
-#include "event.h"
+#include <event.h>
 
 #include <boost/shared_ptr.hpp>
 //----------------------------------------------------
@@ -22,10 +22,11 @@ namespace Lightning
                 PS_BODY,
             };
         public:
-            DataStreamHandler(boost::shared_ptr<UserRequest> request);
+            DataStreamHandler();
 
         public:
             virtual void pushData(evbuffer* buffer);
+            virtual void setUserRequest(boost::shared_ptr<UserRequest> request);
 
         private:
             void initEvBuffer();

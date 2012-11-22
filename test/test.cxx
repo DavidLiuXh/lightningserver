@@ -24,14 +24,14 @@ class MySessionHandler
                     boost::shared_ptr<UserResponse>& response,
                     bool& isContinue)
         {
-            isContinue = false;
+            //isContinue = false;
 
             std::string data("Hello World");
             if (response)
             {
                 response->write(data.c_str(), data.length() + 1);
             }
-            //INFO(__FUNCTION__ << " | request : " << request->toString());
+            INFO(__FUNCTION__ << " | request : " << request->toString());
         }
         
         virtual void onEnded(int sid)
@@ -143,6 +143,7 @@ int main(int argc, char* argv[])
                 new MySessionHandler());
     LightningServer ls(boost::shared_ptr<UserRequestFactory>(new MyRequestFactory),
                 boost::shared_ptr<UserResponseFactory>(new MyResponseFactory),
+                true,
                 "./test.log");
     ls.regSessionHandler(mySessionHandler);
     ls.start(NULL, 6666);
