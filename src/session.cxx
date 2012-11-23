@@ -9,6 +9,8 @@
 #include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 
+#include <errno.h>
+
 using namespace Lightning;
 //-------------------------------------------------
 struct FreeBufferEvent
@@ -59,8 +61,24 @@ class Session::SessionUtil
                 }
                 else if (what & BEV_EVENT_ERROR)
                 {
-                    INFO(__FUNCTION__ << " | Error");
-                    me->OnError(me->shared_from_this(), SEC_ERROR);
+                    int errorCode = evutil_socket_geterror(
+                                bufferevent_getfd(bev));
+                    ERROR(__FUNCTION__ << " | Error"
+                                << " | code : " << errorCode 
+                                << " | msg : " << evutil_socket_error_to_string(errorCode));
+                    switch (errorCode)
+                    {
+                        case 104://connect reset by peer client
+                            {
+                                me->OnClientFdClosed(me->shared_from_this());
+                            }
+                            break;
+                        default:
+                            {
+                                me->OnError(me->shared_from_this(), SEC_ERROR);
+                            }
+                            break;
+                    }
                 }
                 else if (what & BEV_EVENT_WRITING &&
                             what & BEV_EVENT_TIMEOUT)
