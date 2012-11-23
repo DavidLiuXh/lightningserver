@@ -13,8 +13,7 @@ namespace Lightning
 
         public:
            virtual RequestType getType() { return RT_STREAM_WITH_LINE; }
-           virtual const char* getEofFlag() const = 0;
-           virtual void getBody(const char* body, size_t length) = 0;
+           virtual void setBody(const char* body, size_t length) = 0;
 
     };//class UserRequestWithLinet
     
