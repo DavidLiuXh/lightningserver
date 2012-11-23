@@ -6,8 +6,6 @@
 #include <event.h>
 
 #include <boost/shared_ptr.hpp>
-
-#include <string>
 //--------------------------------------------------
 struct evbuffer;
 
@@ -20,7 +18,7 @@ namespace Lightning
         :public DataHandler
     {
         public:
-            DataLineHandler(boost::shared_ptr<UserRequest> request);
+            DataLineHandler();
             virtual ~DataLineHandler() {}
 
         public:
@@ -30,8 +28,6 @@ namespace Lightning
         private:
             boost::shared_ptr<evbuffer> mCache;
             boost::shared_ptr<UserRequestWithLine> mUserRequest;
-            std::string mEofFlag;
-            
     };//class DataLineHandler
 }//namespace Lightning
 #endif//#ifndef LIGHTNING_DATA_LINE_HANDLER_HXX

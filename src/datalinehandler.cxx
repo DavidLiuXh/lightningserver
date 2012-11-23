@@ -3,6 +3,7 @@
 #include "userrequestwithline.hxx"
 
 #include "util/strutil.hxx"
+#include "util/logger.hxx"
 
 using namespace Lightning;
 //------------------------------------------
@@ -17,9 +18,7 @@ struct FreeEvBuffer
     }
 };
 //-----------------------------------------
-DataLineHandler::DataLineHandler(boost::shared_ptr<UserRequest> request)
-        :mUserRequest(boost::shared_dynamic_cast<UserRequestWithLine>(request))
-        ,mEofFlag(LUtil::StrUtil::sEmpty)
+DataLineHandler::DataLineHandler()
 {
     mCache.reset(evbuffer_new(), FreeEvBuffer());
 }
@@ -27,28 +26,30 @@ DataLineHandler::DataLineHandler(boost::shared_ptr<UserRequest> request)
 void DataLineHandler::setUserRequest(boost::shared_ptr<UserRequest> request)
 {
     mUserRequest = boost::shared_dynamic_cast<UserRequestWithLine>(request);
-    if (mUserRequest)
-    {
-        const char* eofFlag = mUserRequest->getEofFlag();
-        if (LUtil::StrUtil::notEmptyOrNull(eofFlag))
-        {
-            mEofFlag = eofFlag;
-        }
-    }
 }
 
 void DataLineHandler::pushData(evbuffer* buffer)
 {
     evbuffer_remove_buffer(buffer, mCache.get(), evbuffer_get_length(buffer));
     
-    bool needContinue = true;
-    evbuffer_ptr found;
-    while (needContinue)
+    char* readLine = NULL;
+    size_t readCount = 0;
+    while (true)
     {
-        found = evbuffer_search(mCache.get(),
-                    mEofFlag.c_str(),
-                    mEofFlag.length(),
-                    NULL);
+        readLine = evbuffer_readln(mCache.get(),
+                    &readCount,
+                    EVBUFFER_EOL_CRLF);
+        if (NULL == readLine)
+        {
+            DEBUG(__FUNCTION__ << " | " << readCount);
+            break;
+        }
+        else
+        {
+            DEBUG(__FUNCTION__ << " | input length" << readCount);
+            mUserRequest->setBody(readLine, readCount);
+            OnRecvRequestFinished(this, mUserRequest);
+        }
     }
 }
 //------------------------------------------

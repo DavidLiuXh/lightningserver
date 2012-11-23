@@ -1,6 +1,7 @@
 #include "../src/LightningServer.hxx"
 #include "../src/sessionHandler.hxx"
 #include "../src/userrequestwithheader.hxx"
+#include "../src/userrequestwithline.hxx"
 #include "../src/userresponse.hxx"
 #include "../util/logger.hxx"
 
@@ -137,11 +138,49 @@ class MyResponseFactory
         }
 };
 
+class MyLineRequest
+:public UserRequestWithLine
+{
+    public:
+        virtual void setBody(const char* body, size_t length)
+        {
+            std::string tmp(body, length);
+            mBody += tmp;
+        }
+
+        virtual std::string toString()
+        {
+            return mBody;
+        }
+    private:
+        std::string mBody;
+};
+
+class MyLineRequestFactory
+:public UserRequestWithLineFactory
+{
+    public:
+        virtual UserRequestPtrType create()
+        {
+            return UserRequestPtrType(new MyLineRequest);
+        }
+};
+
 int main(int argc, char* argv[])
 {
+    boost::shared_ptr<UserRequestFactory> userRequestFactory;
+    if (0 == strcmp(argv[1], "withline"))
+    {
+        userRequestFactory.reset(new MyLineRequestFactory);
+    }
+    else// if (0 == strcmp(argv[1], "withheader"))
+    {
+        userRequestFactory.reset(new MyRequestFactory);
+    }
+
     LightningServer::SessionHandlerPtrType mySessionHandler(
                 new MySessionHandler());
-    LightningServer ls(boost::shared_ptr<UserRequestFactory>(new MyRequestFactory),
+    LightningServer ls(userRequestFactory,
                 boost::shared_ptr<UserResponseFactory>(new MyResponseFactory),
                 true,
                 "./test.log");

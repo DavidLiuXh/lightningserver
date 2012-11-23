@@ -156,10 +156,28 @@ def testSendRequestWithHeaderFunc():
         print sock.recv(12)  
     sock.close()  
 
-def threadTest():
+LinMsg = [
+    "123456789",
+    "asdfghj",
+    "\r\n"
+]
+def testSendRequestWithLineFunc():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
+    sock.connect(('localhost', 6666))  
+    for i in range(3):
+        sock.send(LinMsg[i])
+        #print sock.recv(12)  
+    time.sleep(3)
+    sock.close()  
+
+def threadTestWithHeader():
     for i in range(30):
         t = threading.Thread(target=testSendRequestWithHeaderFunc)
         t.start()
 
+def threadTestWithLine():
+    for i in range(1):
+        t = threading.Thread(target=testSendRequestWithLineFunc)
+        t.start()
 if __name__ == '__main__':
-    threadTest()
+    threadTestWithLine()

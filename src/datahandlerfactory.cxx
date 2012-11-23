@@ -1,6 +1,7 @@
 #include "datahandlerfactory.hxx"
 
 #include "datastreamhandler.hxx"
+#include "datalinehandler.hxx"
 
 #include "util/logger.hxx"
 
@@ -15,6 +16,11 @@ boost::shared_ptr<DataHandler> DataHandlerFactory::create(RequestType type)
         case RT_STREAM_WITH_HEADER:
             {
                 dataHandler.reset(new DataStreamHandler());
+            }
+            break;
+        case RT_STREAM_WITH_LINE:
+            {
+                dataHandler.reset(new DataLineHandler());
             }
             break;
         default:
