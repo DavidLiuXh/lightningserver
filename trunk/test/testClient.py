@@ -166,8 +166,8 @@ def testSendRequestWithLineFunc():
     sock.connect(('localhost', 6666))  
     for i in range(3):
         sock.send(LinMsg[i])
-        #print sock.recv(12)  
     time.sleep(3)
+    #print sock.recv(12)  
     sock.close()  
 
 def threadTestWithHeader():
