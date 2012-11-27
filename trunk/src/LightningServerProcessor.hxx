@@ -34,6 +34,7 @@ namespace Lightning
             bool isRunning() const { return mRunning; }
 
             void processAccepted(evutil_socket_t fd);
+            void processTimer(evutil_socket_t fd);
 
         private:
             void addSession(evutil_socket_t fd, sockaddr_in& addr);

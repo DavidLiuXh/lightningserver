@@ -32,7 +32,7 @@ class MySessionHandler
             {
                 response->write(data.c_str(), data.length() + 1);
             }
-            INFO(__FUNCTION__ << " | request : " << request->toString());
+            INFO(__FUNCTION__ << " | request : " << request->toString().length());
         }
         
         virtual void onEnded(int sid)

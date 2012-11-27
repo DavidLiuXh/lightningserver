@@ -80,6 +80,14 @@ void LightningServerProcessor::processAccepted(evutil_socket_t fd)
         ERROR(__FUNCTION__ << "accept failed");
     }
 }
+
+void LightningServerProcessor::processTimer(evutil_socket_t fd)
+{
+    if (mSessionManager)
+    {
+        mSessionManager->freshTimeWheel();
+    }
+}
 //----------------------------------------------------
 bool LightningServerProcessor::initSession(evutil_socket_t fd,
             sockaddr_in& addr,
@@ -88,6 +96,7 @@ bool LightningServerProcessor::initSession(evutil_socket_t fd,
     bool rt = false;
 
     session.reset(new Session(
+                    mSessionManager,
                     mRequestFactory,
                     fd,
                     inet_ntoa(addr.sin_addr)));

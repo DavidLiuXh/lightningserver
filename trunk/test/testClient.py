@@ -146,14 +146,14 @@ def testNoSnedBody():
 def testSendRequestWithHeaderFunc():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  
     sock.connect(('localhost', 6666))  
-    #time.sleep(2)  
     ftm = 'i'
     ftm += str(len(Msg))
     ftm += 's'
     data = struct.pack(ftm, len(Msg), Msg)
     for i in range(10):
         sock.send(data)
-        print sock.recv(12)  
+    #print sock.recv(12)  
+    time.sleep(10)  
     sock.close()  
 
 LinMsg = [
@@ -166,12 +166,12 @@ def testSendRequestWithLineFunc():
     sock.connect(('localhost', 6666))  
     for i in range(3):
         sock.send(LinMsg[i])
-    time.sleep(3)
+    time.sleep(10)
     #print sock.recv(12)  
     sock.close()  
 
 def threadTestWithHeader():
-    for i in range(30):
+    for i in range(10):
         t = threading.Thread(target=testSendRequestWithHeaderFunc)
         t.start()
 
@@ -180,4 +180,4 @@ def threadTestWithLine():
         t = threading.Thread(target=testSendRequestWithLineFunc)
         t.start()
 if __name__ == '__main__':
-    threadTestWithLine()
+    threadTestWithHeader()

@@ -52,6 +52,7 @@ SET(PROJECT_ALL_FILES
 ../util/logger.cxx
 ../util/strutil.cxx
 ./IoUtil.cxx
+./sessionentry.cxx
 ./sessioninfo.cxx
 ./datastreamhandler.cxx
 ./datalinehandler.cxx

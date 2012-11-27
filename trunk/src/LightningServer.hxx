@@ -45,6 +45,7 @@ namespace Lightning
             void setupSignalHandler();
             bool startListen(const char* ip, int port);
             void process();
+            void addTimerEvent();
         private:
             UserRequestFactoryPtrType mRequestFactory;
             UserResponseFactoryPtrType mResponseFactory;

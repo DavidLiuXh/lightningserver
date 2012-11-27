@@ -102,6 +102,14 @@ class LightningServerUtil
             }
         }
 
+        static void onTimer(evutil_socket_t fd, short what, void* arg)
+        {
+            LightningServerProcessor* ls = static_cast<LightningServerProcessor*>(arg);
+            if (ls)
+            {
+                ls->processTimer(fd);
+            }
+        }
 };
 //------------------------------------------------------------------class LightningServer
 LightningServer::LightningServer(UserRequestFactoryPtrType userRequestFactory,
@@ -183,6 +191,22 @@ bool LightningServer::setupEventBase()
     return rt;
 }
 
+void LightningServer::addTimerEvent()
+{
+    event* timerEvent = event_new(mEventBase.get(),
+                -1,
+                EV_TIMEOUT | EV_PERSIST,
+                LightningServerUtil::onTimer,
+                mLSProcessor.get());
+    if (NULL != timerEvent)
+    {
+        timeval tm;
+        tm.tv_sec = 1;
+        tm.tv_usec = 0;
+        evtimer_add(timerEvent, &tm);
+    }
+}
+
 void LightningServer::setupSignalHandler()
 {
     signal(SIGPIPE, SIG_IGN);
@@ -197,6 +221,7 @@ void LightningServer::setupSignalHandler()
                     LightningServerUtil::onSignalHandler,
                     mLSProcessor.get(),
                     SIGINT);
+        addTimerEvent();
     }
 }
 
