@@ -2,12 +2,18 @@
 #define LIGHTNING_SESSION_MANAGER_HXX
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/noncopyable.hpp>
+#include <boost/circular_buffer.hpp>
+#include <boost/functional/hash/extensions.hpp>
 
 #include <set>
 //---------------------------------------------
 namespace Lightning
 {
     class Session;
+    struct SessionEntry;
 
     class SessionManager
     {
@@ -21,9 +27,19 @@ namespace Lightning
         public:
             bool addSession(SessionPtrType session);
             void removedSession(SessionPtrType session);
+            void updateSession(boost::weak_ptr<SessionEntry> session);
+            void freshTimeWheel();
             
         private:
+            class Entry;
+
+            typedef boost::shared_ptr<SessionEntry> EntryPtrType;
+            typedef boost::unordered_set<EntryPtrType> Bucket;
+            typedef boost::circular_buffer<Bucket> SessionTimeoutListType;
+
+        private:
             SessionContainerType mSessionContainer;
+            SessionTimeoutListType mSesstionTimeoutList;
     };
 }//namespace Lightning
 //---------------------------------------------

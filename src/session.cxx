@@ -1,6 +1,7 @@
 #include "session.hxx"
 #include "sessioninfo.hxx"
 #include "userrequest.hxx"
+#include "sessionmanager.hxx"
 #include "datastreamhandler.hxx"
 #include "datahandlerfactory.hxx"
 
@@ -50,6 +51,7 @@ class Session::SessionUtil
 
         static void onBuffereventEvent(bufferevent* bev, short what, void* ctx)
         {
+            DEBUG(__FUNCTION__);
             Session* me = static_cast<Session*>(ctx);
             if (me)
             {
@@ -96,10 +98,12 @@ class Session::SessionUtil
         }
 };
 //-------------------------------------------------
-Session::Session(boost::weak_ptr<UserRequestFactory> mRequestFactory,
+Session::Session(boost::shared_ptr<SessionManager> sessionManager,
+            boost::weak_ptr<UserRequestFactory> mRequestFactory,
             evutil_socket_t fd,
             const char* ip)
-:mUserRequestFactory(mRequestFactory)
+:mSessionManager(sessionManager)
+,mUserRequestFactory(mRequestFactory)
 ,mSessionInfo(new SessionInfo(fd, ip))
 ,mSessionId(0)
 {
@@ -107,6 +111,10 @@ Session::Session(boost::weak_ptr<UserRequestFactory> mRequestFactory,
 
 Session::~Session()
 {
+    DEBUG(__FUNCTION__);
+    OnRecvRequestFinished.clear();
+    OnClientFdClosed.clear();
+    OnError.clear();
 }
 
 const Session::SessionIdType Session::getSessionId()
@@ -121,6 +129,7 @@ const Session::SessionIdType Session::getSessionId()
 
 bool Session::init(event_base* eb)
 {
+    DEBUG(__FUNCTION__ << " | init session");
     bool rt = false;
 
     if (NULL != eb &&
@@ -189,12 +198,41 @@ void Session::sendData(const char* data, size_t length)
                     length);
     }
 }
+
+void Session::shutdown()
+{
+    if (mSessionInfo)
+    {
+        if (mBufferEvent)
+        {
+            bufferevent_disable(mBufferEvent.get(), EV_READ);
+            bufferevent_disable(mBufferEvent.get(), EV_WRITE);
+            mBufferEvent.reset();
+        }
+
+        ::shutdown(mSessionInfo->mClientFd, SHUT_RDWR);
+        ::close(mSessionInfo->mClientFd);
+
+        boost::shared_ptr<SessionManager> sessionManager = mSessionManager.lock();
+        if (sessionManager)
+        {
+            sessionManager->removedSession(shared_from_this());
+        }
+    }
+}
 //---------------------------------------
 void Session::onRecvRequestFinished(DataHandler*, UserRequestPtrType request)
 {
     DEBUG(__FUNCTION__);
+
+    boost::shared_ptr<SessionManager> sessionManager = mSessionManager.lock();
+    if (sessionManager)
+    {
+        sessionManager->updateSession(mSessionEntry);
+    }
+
     OnRecvRequestFinished(shared_from_this(), request);
-    
+
     UserRequestFactoryPtrType userRequestFactory = mUserRequestFactory.lock();
     if (userRequestFactory &&
                 mDataStreamHandler)
