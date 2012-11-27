@@ -15,6 +15,7 @@
 
 #include <signal.h>
 
+#include <set>
 
 using namespace Lightning;
 //------------------------------------------------------------------struct FreeEventBase
@@ -28,9 +29,23 @@ struct FreeEventBase
         }
     }
 };
+
+struct FreeEvent
+{
+    void operator()(event* ev)
+    {
+        if (NULL != ev)
+        {
+            event_free(ev);
+        }
+    }
+};
 //------------------------------------------------------------------class LightningServerUtil
 class LightningServerUtil
 {
+    private:
+        typedef boost::shared_ptr<event> EventPtrType;
+        typedef std::set<EventPtrType> EventListType;
     public:
         static void AddExitSignalEvent(event_base* eb,
                     event_callback_fn callBackFunc,
@@ -43,7 +58,9 @@ class LightningServerUtil
                         arg);
             if (NULL != signalEvent)
             {
+                EventPtrType ev(signalEvent, FreeEvent());
                 evsignal_add(signalEvent, NULL);
+                sEventList.insert(ev);
             }
         }
 
@@ -63,9 +80,12 @@ class LightningServerUtil
                         arg);
             if (NULL != sockEvent)
             {
+                EventPtrType ev(sockEvent, FreeEvent());
+
                 int code = event_add(sockEvent, timeOut);
                 if (0 == code)
                 {
+                    sEventList.insert(ev);
                     rt = true;
                 }
                 else
@@ -110,7 +130,12 @@ class LightningServerUtil
                 ls->processTimer(fd);
             }
         }
+
+    private:
+        static EventListType sEventList;
 };
+
+LightningServerUtil::EventListType LightningServerUtil::sEventList;
 //------------------------------------------------------------------class LightningServer
 LightningServer::LightningServer(UserRequestFactoryPtrType userRequestFactory,
             UserResponseFactoryPtrType userResponseFactory,
@@ -193,18 +218,15 @@ bool LightningServer::setupEventBase()
 
 void LightningServer::addTimerEvent()
 {
-    event* timerEvent = event_new(mEventBase.get(),
+    timeval tm;
+    tm.tv_sec = 1;
+    tm.tv_usec = 0;
+    LightningServerUtil::AddSockEvent(mEventBase.get(),
                 -1,
                 EV_TIMEOUT | EV_PERSIST,
                 LightningServerUtil::onTimer,
-                mLSProcessor.get());
-    if (NULL != timerEvent)
-    {
-        timeval tm;
-        tm.tv_sec = 1;
-        tm.tv_usec = 0;
-        evtimer_add(timerEvent, &tm);
-    }
+                mLSProcessor.get(),
+                &tm);
 }
 
 void LightningServer::setupSignalHandler()
