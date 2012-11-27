@@ -111,7 +111,6 @@ Session::Session(boost::shared_ptr<SessionManager> sessionManager,
 
 Session::~Session()
 {
-    DEBUG(__FUNCTION__);
     OnRecvRequestFinished.clear();
     OnClientFdClosed.clear();
     OnError.clear();
