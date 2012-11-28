@@ -52,12 +52,13 @@ void ResponseProcessor::stop()
 
 void ResponseProcessor::addResponse(ProcessQueueItem* response)
 {
-    INFO(__FUNCTION__);
-
-    if (mProcessQueue)
+    INFO(__FUNCTION__ << " | enter");
+    if (!mStop &&
+                mProcessQueue)
     {
         mProcessQueue->push(response);
     }
+    INFO(__FUNCTION__ << " | exit");
 } 
 //-----------------------------------------------
 void ResponseProcessor::process()

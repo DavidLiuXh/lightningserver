@@ -6,6 +6,7 @@
 #include <event.h>
 
 #include <boost/weak_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 //-------------------------------------------------
 namespace Lightning
@@ -42,6 +43,7 @@ namespace Lightning
                         void* userData);
         private:
             EventBaseWeakPtrType mEventBase;
+            boost::shared_ptr<event> mEvent;
             int mFdPair[2];
     };//class ResponseQueue
 }//namespace Lightning
