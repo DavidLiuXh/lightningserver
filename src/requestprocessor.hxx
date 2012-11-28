@@ -25,7 +25,6 @@ namespace Lightning
 
         public:
             boost::function<void (RequestProcessor&, const ProcessQueueItemPtrType&)> SessionRequestEvent;
-
         public:
             RequestProcessor(size_t workThreadSize);
             ~RequestProcessor();

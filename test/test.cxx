@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
                 new MySessionHandler());
     LightningServer ls(userRequestFactory,
                 boost::shared_ptr<UserResponseFactory>(new MyResponseFactory),
-                true,
+                false,
                 "./test.log");
     ls.regSessionHandler(mySessionHandler);
     ls.start(NULL, 6666);

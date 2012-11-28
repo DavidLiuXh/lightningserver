@@ -1,11 +1,23 @@
 #include "responsequeue.hxx"
 
+#include "IoUtil.hxx"
 #include "util/logger.hxx"
 
 #include <string.h>
 #include <errno.h>
 
 using namespace Lightning;
+//-------------------------------------------------
+struct FreeSockEvent
+{
+    void operator ()(event* ev)
+    {
+        if (NULL != ev)
+        {
+            event_free(ev);
+        }
+    }
+};
 //-------------------------------------------------
 ResponseQueue::ResponseQueue(EventBaseWeakPtrType eventBase)
         :mEventBase(eventBase)
@@ -25,6 +37,10 @@ bool ResponseQueue::init()
 
 void ResponseQueue::uninit()
 {
+    if (mEvent)
+    {
+        event_del(mEvent.get());
+    }
     uninitFdPair();
 }
 
@@ -85,6 +101,9 @@ bool ResponseQueue::initFdPair()
 
     if (0 == socketpair(AF_UNIX, SOCK_STREAM, 0, mFdPair))
     {
+        //IoUtil::setSockBlock(mFdPair[0], false);
+        //IoUtil::setSockBlock(mFdPair[1], false);
+
         boost::shared_ptr<event_base> eventBase = mEventBase.lock();
         if (eventBase)
         {
@@ -93,6 +112,7 @@ bool ResponseQueue::initFdPair()
                         EV_READ | EV_PERSIST,
                         ResponseQueue::onResponsePushNotify,
                         this);
+            mEvent.reset(sockEvent, FreeSockEvent());
             if (NULL != sockEvent &&
                         0 == event_add(sockEvent, NULL))
             {

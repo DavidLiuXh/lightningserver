@@ -48,7 +48,10 @@ void DataLineHandler::pushData(evbuffer* buffer)
         {
             DEBUG(__FUNCTION__ << " | input length" << readCount);
             mUserRequest->setBody(readLine, readCount);
-            OnRecvRequestFinished(this, mUserRequest);
+            if (!OnRecvRequestFinished.empty())
+            {
+                OnRecvRequestFinished(this, mUserRequest);
+            }
         }
     }
 }

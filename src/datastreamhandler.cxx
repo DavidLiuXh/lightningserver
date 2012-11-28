@@ -110,7 +110,10 @@ bool DataStreamHandler::recvBody()
                     body.get(),
                     mBodySize);
         mUserRequest->setBody(body.get(), mBodySize);
-        OnRecvRequestFinished(this, mUserRequest);
+        if (!OnRecvRequestFinished.empty())
+        {
+            OnRecvRequestFinished(this, mUserRequest);
+        }
         needContinue = true;
     }
 

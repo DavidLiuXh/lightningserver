@@ -194,7 +194,7 @@ void LightningServerProcessor::startResponseProcessor()
 
 void LightningServerProcessor::stopResponseProcessor()
 {
-    DEBUG(__FUNCTION__ << " | response processor stopping");
+    INFO(__FUNCTION__ << " | response processor stopping");
 
     if (mResponseProcessor)
     {
@@ -202,7 +202,7 @@ void LightningServerProcessor::stopResponseProcessor()
         mResponseProcessor->stop();
     }
 
-    DEBUG(__FUNCTION__ << " | response processor stop finished");
+    INFO(__FUNCTION__ << " | response processor stop finished");
 }
 
 void LightningServerProcessor::handleRequestEvent(RequestProcessor& requestProcessor,

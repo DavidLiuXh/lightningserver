@@ -38,16 +38,19 @@ void RequestProcessor::stop()
     {
         mShutdown = true;
 
-        mCondition.notify_one();
+        {
+            boost::mutex::scoped_lock(mMutext);
+            mCondition.notify_one();
+        }
 
         mThread->join();
-    }
 
-    INFO(__FUNCTION__ << " | request processor stop finished");
+        INFO(__FUNCTION__ << " | request processor stop finished");
 
-    if (mTaskExcutor)
-    {
-        mTaskExcutor->wait();
+        if (mTaskExcutor)
+        {
+            mTaskExcutor->wait();
+        }
     }
 
     INFO(__FUNCTION__ << " | TaskExcutor finished");
@@ -55,7 +58,8 @@ void RequestProcessor::stop()
 
 void RequestProcessor::addRequest(ProcessQueueItem* request)
 {
-    if (NULL != request &&
+    if (!mShutdown &&
+                NULL != request &&
                 mProcessQueue)
     {
         mProcessQueue->push(request);
@@ -110,6 +114,9 @@ void RequestProcessor::addTask(ProcessQueueItemPtrType requestTask)
 void RequestProcessor::processTask(ProcessQueueItemPtrType requestTask)
 {
     DEBUG(__FUNCTION__);
-    SessionRequestEvent(*this, requestTask);
+    if (!SessionRequestEvent.empty())
+    {
+        SessionRequestEvent(*this, requestTask);
+    }
 }
 //----------------------------------------------------------

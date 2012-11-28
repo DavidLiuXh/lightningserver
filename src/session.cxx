@@ -230,7 +230,10 @@ void Session::onRecvRequestFinished(DataHandler*, UserRequestPtrType request)
         sessionManager->updateSession(mSessionEntry);
     }
 
-    OnRecvRequestFinished(shared_from_this(), request);
+    if (!OnRecvRequestFinished.empty())
+    {
+        OnRecvRequestFinished(shared_from_this(), request);
+    }
 
     UserRequestFactoryPtrType userRequestFactory = mUserRequestFactory.lock();
     if (userRequestFactory &&
