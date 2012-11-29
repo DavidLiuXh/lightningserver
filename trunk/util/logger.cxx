@@ -10,9 +10,11 @@ const char* DEFAULT_LOG_FILE_NAME = "__lutil_logger__.log";
 const char* LOGGER_NAME = "__lutil_logger__";
 //---------------------------------------------
 log4cplus::Logger Logger::sLogger = log4cplus::Logger::getInstance(LOGGER_NAME);
+bool Logger::sInit = false;
 
 void Logger::init(LOG_LEVEL level,
-            const char* fileName)
+            const char* fileName,
+            bool outputConsole)
 {
     if (NULL == fileName ||
                 '\0' == fileName[0])
@@ -34,22 +36,27 @@ void Logger::init(LOG_LEVEL level,
             sLogger.addAppender(fileAppender);
         }
 
-        log4cplus::SharedAppenderPtr consoleAppender(new log4cplus::ConsoleAppender());      
-        if (NULL != consoleAppender.get())
+        if (outputConsole)
         {
-            consoleAppender->setName("console log");
-            std::auto_ptr<log4cplus::Layout> layout(new log4cplus::PatternLayout(
-                            //"[%p] [%D{%m/%d/%y %H:%M:%S:%s}] [%t] [%l] - %m %n"));
-                "[%p] [%D{%m/%d/%y %H:%M:%S,%q}] [%t] [%l] - %m %n"));
-            if (NULL != layout.get())
+            log4cplus::SharedAppenderPtr consoleAppender(new log4cplus::ConsoleAppender());      
+            if (NULL != consoleAppender.get())
             {
-                consoleAppender->setLayout(layout);
-            }
+                consoleAppender->setName("console log");
+                std::auto_ptr<log4cplus::Layout> layout(new log4cplus::PatternLayout(
+                                //"[%p] [%D{%m/%d/%y %H:%M:%S:%s}] [%t] [%l] - %m %n"));
+                    "[%p] [%D{%m/%d/%y %H:%M:%S,%q}] [%t] [%l] - %m %n"));
+                if (NULL != layout.get())
+                {
+                    consoleAppender->setLayout(layout);
+                }
 
-            sLogger.addAppender(consoleAppender);
+                sLogger.addAppender(consoleAppender);
+            }
         }
 
         sLogger.setLogLevel(log4cplus::LogLevel(level));
+
+        sInit = true;
     }
 }
 //---------------------------------------------

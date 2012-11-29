@@ -186,7 +186,8 @@ void LightningServer::initLog(const char* path)
     {
         LUtil::Logger::init(
                     mIsDebugMode ? LUtil::Logger::LL_ALL : LUtil::Logger::LL_INFO,
-                    path);
+                    path,
+                    mIsDebugMode ? true : false);
     }
 }
 
