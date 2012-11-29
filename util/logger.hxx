@@ -8,11 +8,46 @@
 //---------------------------------------------
 namespace LUtil 
 {
-    #define TRACE(msg) LOG4CPLUS_TRACE(LUtil::Logger::instance(), msg) 
-    #define INFO(msg) LOG4CPLUS_INFO(LUtil::Logger::instance(), msg) 
-    #define DEBUG(msg) LOG4CPLUS_DEBUG(LUtil::Logger::instance(), msg)
-    #define WARNING(msg) LOG4CPLUS_WARN(LUtil::Logger::instance(), msg) 
-    #define ERROR(msg) LOG4CPLUS_ERROR(LUtil::Logger::instance(), msg)
+    #define TRACE(msg) \
+    do \
+    { \
+        if (NULL != LUtil::Logger::instance()) \
+        { \
+LOG4CPLUS_TRACE(*LUtil::Logger::instance(), msg); \
+        } \
+    }while(0);
+    #define INFO(msg) \
+     do \
+    { \
+        if (NULL != LUtil::Logger::instance()) \
+        { \
+LOG4CPLUS_INFO(*LUtil::Logger::instance(), msg); \
+        } \
+    }while(0);
+    #define DEBUG(msg) \
+     do \
+    { \
+        if (NULL != LUtil::Logger::instance()) \
+        { \
+LOG4CPLUS_DEBUG(*LUtil::Logger::instance(), msg); \
+        } \
+    }while(0);
+    #define WARNING(msg) \
+    do \
+    { \
+        if (NULL != LUtil::Logger::instance()) \
+        { \
+LOG4CPLUS_WARN(*LUtil::Logger::instance(), msg); \
+        } \
+    }while(0);
+    #define ERROR(msg) \
+    do \
+    { \
+        if (NULL != LUtil::Logger::instance()) \
+        { \
+LOG4CPLUS_ERROR(*LUtil::Logger::instance(), msg); \
+        } \
+    }while(0);
 
     class Logger
         :private boost::noncopyable
@@ -28,14 +63,23 @@ namespace LUtil
             };
         public:
             static void init(LOG_LEVEL level,
-                        const char* fileName);
-            static log4cplus::Logger& instance()
+                        const char* fileName,
+                        bool outputConsole);
+            static log4cplus::Logger* instance()
             {
-                return sLogger;
+                if (sInit)
+                {
+                    return &sLogger;
+                }
+                else
+                {
+                    return NULL;
+                }
             }
             
         private:
             static log4cplus::Logger sLogger;
+            static bool sInit;
     };
 }//namesapce rrrtc
 #endif //#ifndef RRRTC_LOGGER_HXX
