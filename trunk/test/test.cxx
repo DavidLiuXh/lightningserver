@@ -7,6 +7,8 @@
 
 #include <boost/scoped_array.hpp>
 
+#include <google/profiler.h>
+
 #include <string.h>
 #include <string>
 
@@ -168,6 +170,8 @@ class MyLineRequestFactory
 
 int main(int argc, char* argv[])
 {
+    ProfilerStart("./cpu");
+
     boost::shared_ptr<UserRequestFactory> userRequestFactory;
     if (0 == strcmp(argv[1], "withline"))
     {
@@ -187,6 +191,7 @@ int main(int argc, char* argv[])
     ls.regSessionHandler(mySessionHandler);
     ls.start(NULL, 6666);
 
+    ProfilerStop();
     return 0;
 }
 //----------------------------------------------------

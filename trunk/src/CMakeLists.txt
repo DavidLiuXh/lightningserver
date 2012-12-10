@@ -174,7 +174,10 @@ ELSE (WIN32)
      
      FIND_LIBRARY(EVENT_LIB NAMES event PATHS /usr/local/lib )
      MESSAGE(STATUS "libevent lib path: ${EVENT_LIB}")
-     
+
+     FIND_LIBRARY(TCMALLOC_LIB NAMES tcmalloc PATHS /usr/local/lib )
+     MESSAGE(STATUS "tcmalloc lib path: ${TCMALLOC_LIB}") 
+
      SET(Boost_USE_STATIC_LIBS OFF)
      SET(Boost_USE_MULTITHREADED ON)
      FIND_PACKAGE(Boost COMPONENTS system date_time thread)   
@@ -185,6 +188,7 @@ ELSE (WIN32)
                             ${Boost_LIBRARIES}
                             ${LOG4CPLUS_LIB}
                             ${EVENT_LIB}
+							${TCMALLOC_LIB}
                             stdc++
                             )
      ENDIF()

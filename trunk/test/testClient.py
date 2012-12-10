@@ -150,10 +150,9 @@ def testSendRequestWithHeaderFunc():
     ftm += str(len(Msg))
     ftm += 's'
     data = struct.pack(ftm, len(Msg), Msg)
-    for i in range(10):
-    #while (1):
+    for i in range(1000):
         sock.send(data)
-    print sock.recv(12)  
+        print sock.recv(12)  
     #time.sleep(10)  
     sock.close()  
 
