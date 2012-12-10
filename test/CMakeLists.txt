@@ -156,6 +156,9 @@ ELSE (WIN32)
      FIND_LIBRARY(EVENT_LIB NAMES event PATHS /usr/local/lib )
      MESSAGE(STATUS "libevent lib path: ${EVENT_LIB}")
 
+     FIND_LIBRARY(GOOGLE_PROFILE_LIB NAMES profiler PATHS /usr/local/lib )
+     MESSAGE(STATUS "google profile lib path: ${GOOGLE_PROFILE_LIB}")
+
      #FIND_LIBRARY(LIGHTNINGSERVER_LIB NAMES LightningServer PATHS ../lib/debug )
      #MESSAGE(STATUS "lightningserver lib path: ${LIGHTNINGSERVER_LIB}")
      
@@ -170,6 +173,7 @@ ELSE (WIN32)
                             ${LOG4CPLUS_LIB}
                             ${EVENT_LIB}
                             LightningServer#${LIGHTNINGSERVER_LIB}
+                            ${GOOGLE_PROFILE_LIB}
                             stdc++
                             )
      ENDIF()
