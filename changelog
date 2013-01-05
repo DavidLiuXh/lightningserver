@@ -1,9 +1,15 @@
 1. version 0.0.1:
    2012.11.19：
-     ＊首次提交;
+     * 首次提交;
    2012.11.20：
-     ＊分拆CMakefileLists.txt;
+     * 分拆CMakefileLists.txt;
    2012.11.21
-     ＊添加setDebugMode接口到LightningServer class, 在非debug模式下只输出info
+     * 添加setDebugMode接口到LightningServer class, 在非debug模式下只输出info
 	 log;
+
+2. version 0.0.5
+   2013.01.05:
+     * 整理LightningServer类，隐藏实现细节，使头文件更简洁;
+	 * 完善CMakeList.txt, 增回release编译;
+	 * 添加include目录，用于放置用户使用的头文件;
 
