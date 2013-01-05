@@ -1,8 +1,6 @@
 #ifndef LIGHTNING_SERVER_HXX
 #define LIGHTNING_SERVER_HXX
 
-#include "version.hxx"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 //-------------------------------------------------
@@ -29,32 +27,17 @@ namespace Lightning
             ~LightningServer();
 
         public:
-            const char* getVersion()
-            {
-                return CURRENT_VERSION;
-            }
+            inline const char* getVersion();
 
             bool regSessionHandler(SessionHandlerPtrType sessionHandler);
             void start(const char* ip, int port);
             void stop();
 
         private:
-            void initLog(const char* path);
-
-            bool setupEventBase();
-            void setupSignalHandler();
-            bool startListen(const char* ip, int port);
-            void process();
-            void addTimerEvent();
+            class LightningServerImp;
+            
         private:
-            UserRequestFactoryPtrType mRequestFactory;
-            UserResponseFactoryPtrType mResponseFactory;
-            SessionHandlerPtrType mSessionHandler;
-
-            boost::shared_ptr<event_base> mEventBase;
-            boost::scoped_ptr<LightningServerProcessor> mLSProcessor;
-
-            bool mIsDebugMode;
+            boost::scoped_ptr<LightningServerImp> mImp;
 
     };//class LightningServer
 

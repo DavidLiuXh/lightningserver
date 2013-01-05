@@ -74,6 +74,7 @@ INCLUDE_DIRECTORIES(
 ../
 ../util/lockfree
 ../util/threadpool
+../include
 )
 #=============================== build =========================================================
 IF (WIN32)

@@ -1,8 +1,8 @@
-#include "../src/LightningServer.hxx"
-#include "../src/sessionHandler.hxx"
-#include "../src/userrequestwithheader.hxx"
-#include "../src/userrequestwithline.hxx"
-#include "../src/userresponse.hxx"
+#include "../include/LightningServer.hxx"
+#include "../include/sessionHandler.hxx"
+#include "../include/userrequestwithheader.hxx"
+#include "../include/userrequestwithline.hxx"
+#include "../include/userresponse.hxx"
 #include "../util/logger.hxx"
 
 #include <boost/scoped_array.hpp>

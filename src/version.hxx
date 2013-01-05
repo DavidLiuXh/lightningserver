@@ -3,6 +3,6 @@
 
 namespace Lightning
 {
-    const char* CURRENT_VERSION = "0.0.0.4";
+    const char* CURRENT_VERSION = "0.0.0.5";
 }//namespace Lightning
 #endif//#ifndef LIGHTNING_VERSION_HXX
