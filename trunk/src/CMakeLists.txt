@@ -199,70 +199,45 @@ ELSE (WIN32)
 
   ELSE (CMAKE_BUILD_TYPE MATCHES Debug)
     MESSAGE(STATUS "${PROJECT_NAME} ${CMAKE_BUILD_TYPE}")
+     SET(CMAKE_CONFIGURATION_TYPES "Release")
+     #SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "../../lib/release")
 
     ADD_DEFINITIONS(
                     )
 
-    ADD_EXECUTABLE(${PROJECT_NAME} ${PROJECT_ALL_FILES} )
+     ADD_LIBRARY(${PROJECT_NAME} STATIC ${PROJECT_ALL_FILES} )
 
     SET(CMAKE_FIND_LIBRARY_SUFFIXES .a)
 
-    FIND_LIBRARY(TUTIL_LIB NAMES tutil PATHS ../contrib/TUtil/.libs )
-    FIND_LIBRARY(DOWNLOADCLIENT_LIB NAMES DownloadEngine PATHS ../DownloadClient/lib )
-    FIND_LIBRARY(DOWNLOADLIB_LIB NAMES downloadlib PATHS ../contrib/downloadlib/src/.libs )
-    FIND_LIBRARY(SQLITE3_LIB NAMES sqlite3 PATHS ../contrib/sqlite-3.6.20/.libs )
-    FIND_LIBRARY(JSON_LIB NAMES json PATHS ../contrib/json-c/.libs)
-    FIND_LIBRARY(CURL_LIB NAMES curl PATHS ../contrib/downloadlib/contrib/curl-7/lib/.libs NO_CMAKE_SYSTEM_PATH) 
-    FIND_LIBRARY(TORRENT_LIB NAMES torrent-rasterbar PATHS ../contrib/downloadlib/contrib/libtorrent-rasterbar-0.14.3/src/.libs)
+     FIND_LIBRARY(LOG4CPLUS_LIB NAMES log4cplus PATHS /usr/local/lib )
+     MESSAGE(STATUS "log4cplus lib path: ${LOG4CPLUS_LIB}")
+     
+     FIND_LIBRARY(EVENT_LIB NAMES event PATHS /usr/local/lib )
+     MESSAGE(STATUS "libevent lib path: ${EVENT_LIB}")
+
+     FIND_LIBRARY(TCMALLOC_LIB NAMES tcmalloc PATHS /usr/local/lib )
+     MESSAGE(STATUS "tcmalloc lib path: ${TCMALLOC_LIB}") 
 
     SET(Boost_USE_STATIC_LIBS ON)
     SET(Boost_USE_MULTITHREADED ON)
-    FIND_PACKAGE(Boost 1.40.0 COMPONENTS regex system filesystem date_time iostreams thread program_options)
+     FIND_PACKAGE(Boost COMPONENTS system date_time thread)   
     if(Boost_FOUND)
       MESSAGE("BOOST lib path:${Boost_LIBRARIES}")
-      MESSAGE(STATUS "tutil lib path: ${TUTIL_LIB}")
-      MESSAGE(STATUS "downloadEngine lib path: ${DOWNLOADLIB_LIB}")
-      MESSAGE(STATUS "downloadClient lib path: ${DOWNLOADCLIENT_LIB}")
-      MESSAGE(STATUS "jsoc lib path: ${JSON_LIB}")
-      MESSAGE(STATUS "sqllite lib path: ${SQLITE3_LIB}")
-      MESSAGE(STATUS "cur lib path: ${CURL_LIB}")
-      
+
       IF(CMAKE_HOST_APPLE)
-        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-			    ${DOWNLOADCLIENT_LIB}
-			    ${DOWNLOADLIB_LIB}
-			    ${TUTIL_LIB}
-			    ${TORRENT_LIB}
-			    ${CURL_LIB}
-			    ${SQLITE3_LIB}
-			    ${JSON_LIB}
-			    ${Boost_LIBRARIES}
-			    stdc++
-			    crypto
-			    ssl
-                            pthread
-			    z
-			    )
       ELSE()
-        TARGET_LINK_LIBRARIES(${PROJECT_NAME}
-			    ${DOWNLOADCLIENT_LIB}
-			    ${DOWNLOADLIB_LIB}
-			    ${TUTIL_LIB}
-			    ${TORRENT_LIB}
-			    ${CURL_LIB}
-			    ${SQLITE3_LIB}
-			    ${JSON_LIB}
-			    ${Boost_LIBRARIES}
-			    stdc++
-			    crypto
-			    ssl
+       TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                            ${Boost_LIBRARIES}
+                            ${LOG4CPLUS_LIB}
+                            ${EVENT_LIB}
+							${TCMALLOC_LIB}
+                            stdc++
                             pthread
-			    rt
-			    z
-			    )
+                            rt
+                            )
       ENDIF()
 
-    SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+    SET(LIBRARY_OUTPUT_PATH "../../lib/release")
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
    endif()
