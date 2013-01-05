@@ -1,5 +1,7 @@
 #include "LightningServer.hxx"
 
+#include "version.hxx"
+
 #include "sessionHandler.hxx"
 #include "requestprocessor.hxx"
 
@@ -136,33 +138,65 @@ class LightningServerUtil
 };
 
 LightningServerUtil::EventListType LightningServerUtil::sEventList;
+//------------------------------------------------------------------
+class LightningServer::LightningServerImp
+{
+    public:
+        LightningServerImp(UserRequestFactoryPtrType userReuqestFactory,
+                    UserResponseFactoryPtrType userResponseFactory,
+                    bool isDebugMode,
+                    const char* logPath);
+        void initLog(const char* path);
+
+        bool setupEventBase();
+        void setupSignalHandler();
+        bool startListen(const char* ip, int port);
+        void process();
+        void addTimerEvent();
+        bool regSessionHandler(SessionHandlerPtrType sessionHandler);
+    private:
+        UserRequestFactoryPtrType mRequestFactory;
+        UserResponseFactoryPtrType mResponseFactory;
+        SessionHandlerPtrType mSessionHandler;
+
+        boost::shared_ptr<event_base> mEventBase;
+        boost::scoped_ptr<LightningServerProcessor> mLSProcessor;
+
+        bool mIsDebugMode;
+};
+
 //------------------------------------------------------------------class LightningServer
 LightningServer::LightningServer(UserRequestFactoryPtrType userRequestFactory,
             UserResponseFactoryPtrType userResponseFactory,
             bool isDebugMode,
             const char* logPath)
-:mRequestFactory(userRequestFactory)
-    ,mResponseFactory(userResponseFactory)
-    ,mIsDebugMode(isDebugMode)
+:mImp(new LightningServerImp(userRequestFactory
+                ,userResponseFactory
+                ,isDebugMode
+                ,logPath))
 {
-    initLog(logPath);
 }
 
 LightningServer::~LightningServer()
 {
 }
 //------------------------------------------------------------------
+const char* LightningServer::getVersion()
+{
+    return CURRENT_VERSION;
+}
+
 void LightningServer::start(const char* ip, int port)
 {
     INFO(__FUNCTION__ << " | Lightning Server starting...");
 
-    if (setupEventBase())
+    if (mImp && mImp->setupEventBase())
     {
-        setupSignalHandler();
+        mImp->setupSignalHandler();
 
-        if (startListen(ip, port))
+        if (mImp->startListen(ip, port))
         {
-            process();
+            mImp->process();
         }
     }
 
@@ -176,11 +210,35 @@ void LightningServer::stop()
 
 bool LightningServer::regSessionHandler(SessionHandlerPtrType sessionHandler)
 {
+    bool rt = false;
+    if (mImp)
+    {
+        mImp->regSessionHandler(sessionHandler);
+        rt = true;
+    }
+
+    return rt;
+}
+//------------------------------------------------------------------
+LightningServer::LightningServerImp::LightningServerImp(UserRequestFactoryPtrType userRequestFactory,
+            UserResponseFactoryPtrType userResponseFactory,
+            bool isDebugMode,
+            const char* logPath)
+:mRequestFactory(userRequestFactory)
+,mResponseFactory(userResponseFactory)
+    ,mIsDebugMode(isDebugMode)
+{
+    initLog(logPath);
+}
+
+
+bool LightningServer::LightningServerImp::regSessionHandler(SessionHandlerPtrType sessionHandler)
+{
     mSessionHandler = sessionHandler;
     return true;
 }
-//------------------------------------------------------------------
-void LightningServer::initLog(const char* path)
+
+void LightningServer::LightningServerImp::initLog(const char* path)
 {
     if (LUtil::StrUtil::notEmptyOrNull(path))
     {
@@ -191,7 +249,7 @@ void LightningServer::initLog(const char* path)
     }
 }
 
-bool LightningServer::setupEventBase()
+bool LightningServer::LightningServerImp::setupEventBase()
 {
     bool rt = false;
 
@@ -217,7 +275,7 @@ bool LightningServer::setupEventBase()
     return rt;
 }
 
-void LightningServer::addTimerEvent()
+void LightningServer::LightningServerImp::addTimerEvent()
 {
     timeval tm;
     tm.tv_sec = 1;
@@ -230,7 +288,7 @@ void LightningServer::addTimerEvent()
                 &tm);
 }
 
-void LightningServer::setupSignalHandler()
+void LightningServer::LightningServerImp::setupSignalHandler()
 {
     signal(SIGPIPE, SIG_IGN);
 
@@ -248,7 +306,7 @@ void LightningServer::setupSignalHandler()
     }
 }
 
-bool LightningServer::startListen(const char* ip, int port)
+bool LightningServer::LightningServerImp::startListen(const char* ip, int port)
 {
     bool rt = false;
 
@@ -270,7 +328,7 @@ bool LightningServer::startListen(const char* ip, int port)
     return rt;
 }
 
-void LightningServer::process()
+void LightningServer::LightningServerImp::process()
 {
     while (mLSProcessor &&
                 mLSProcessor->isRunning() &&
