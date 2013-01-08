@@ -24,6 +24,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h> 
 
 #include <boost/bind.hpp>
 //----------------------------------------------------
@@ -41,7 +44,17 @@ LightningServerProcessor::LightningServerProcessor(boost::shared_ptr<event_base>
 ,mResponseFactory(userResponseFactory)
 ,mSessionManager(new SessionManager)
 ,mRunning(true)
+,mIdleFd(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
+}
+
+LightningServerProcessor::~LightningServerProcessor()
+{
+    if (-1 != mIdleFd)
+    {
+        ::close(mIdleFd);
+        mIdleFd = -1;
+    }
 }
 //----------------------------------------------------
 void LightningServerProcessor::start()
@@ -76,6 +89,15 @@ void LightningServerProcessor::processAccepted(evutil_socket_t fd)
                 EAGAIN != errorCode &&
                 EWOULDBLOCK != errorCode)
     {
+
+        if (EMFILE == errorCode ||
+                    ENFILE == errorCode)
+        {
+            ::close(mIdleFd);
+            mIdleFd = ::accept(fd, NULL, NULL);
+            ::close(mIdleFd);
+            mIdleFd = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
+        }
 
         ERROR(__FUNCTION__ << "accept failed");
     }
