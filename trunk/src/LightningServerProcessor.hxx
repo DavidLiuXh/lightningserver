@@ -28,6 +28,7 @@ namespace Lightning
                         boost::shared_ptr<UserRequestFactory> userReuqestFactory,
                         boost::shared_ptr<UserResponseFactory> userResponseFactory);
 
+            ~LightningServerProcessor();
         public:
             void start();
             void stop();
@@ -70,6 +71,7 @@ namespace Lightning
             boost::scoped_ptr<RequestProcessor> mRequestProcessor;
 
             bool mRunning;
+            int mIdleFd;
     };//class LightningServerProcessor
 }//namespace Lightning
 
