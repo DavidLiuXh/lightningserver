@@ -32,6 +32,7 @@ namespace Lightning
             bool regSessionHandler(SessionHandlerPtrType sessionHandler);
             void start(const char* ip, int port);
             void stop();
+            void setSessionMaxCount(size_t maxCount); 
 
         private:
             class LightningServerImp;

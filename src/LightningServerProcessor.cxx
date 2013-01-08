@@ -37,7 +37,8 @@ using namespace Lightning;
 LightningServerProcessor::LightningServerProcessor(boost::shared_ptr<event_base> eb,
             boost::shared_ptr<SessionHandler> sessionHandler,
             boost::shared_ptr<UserRequestFactory> userRequestFactory,
-            boost::shared_ptr<UserResponseFactory> userResponseFactory)
+            boost::shared_ptr<UserResponseFactory> userResponseFactory,
+            size_t maxSessionCount)
 :mEventBase(eb)
 ,mSessionHandler(sessionHandler)
 ,mRequestFactory(userRequestFactory)
@@ -45,6 +46,7 @@ LightningServerProcessor::LightningServerProcessor(boost::shared_ptr<event_base>
 ,mSessionManager(new SessionManager)
 ,mRunning(true)
 ,mIdleFd(::open("/dev/null", O_RDONLY | O_CLOEXEC))
+,mSessionMaxCount(maxSessionCount)
 {
 }
 
@@ -74,6 +76,12 @@ void LightningServerProcessor::stop()
 
 void LightningServerProcessor::processAccepted(evutil_socket_t fd)
 {
+    if (checkSessionCountToMax())
+    {
+        ERROR(__FUNCTION__ << " | session count to amx : " << mSessionMaxCount);
+        return;
+    }
+
     struct sockaddr_in addr;
     socklen_t addrLen = sizeof(addr);
 
@@ -89,7 +97,6 @@ void LightningServerProcessor::processAccepted(evutil_socket_t fd)
                 EAGAIN != errorCode &&
                 EWOULDBLOCK != errorCode)
     {
-
         if (EMFILE == errorCode ||
                     ENFILE == errorCode)
         {
@@ -111,6 +118,19 @@ void LightningServerProcessor::processTimer(evutil_socket_t fd)
     }
 }
 //----------------------------------------------------
+bool LightningServerProcessor::checkSessionCountToMax()
+{
+    bool rt = false;
+
+    if (-1 != mSessionMaxCount &&
+                mSessionManager &&
+                mSessionManager->getSessionCount() == mSessionMaxCount)
+    {
+        rt = true;
+    }
+
+    return rt;
+}
 bool LightningServerProcessor::initSession(evutil_socket_t fd,
             sockaddr_in& addr,
             boost::shared_ptr<Session>& session)

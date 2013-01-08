@@ -189,6 +189,7 @@ int main(int argc, char* argv[])
                 false,
                 "./test.log");
     ls.regSessionHandler(mySessionHandler);
+    ls.setSessionMaxCount(5);
     ls.start(NULL, 6666);
 
     ProfilerStop();

@@ -26,7 +26,8 @@ namespace Lightning
             LightningServerProcessor(boost::shared_ptr<event_base> eb,
                         boost::shared_ptr<SessionHandler> sessionHandler,
                         boost::shared_ptr<UserRequestFactory> userReuqestFactory,
-                        boost::shared_ptr<UserResponseFactory> userResponseFactory);
+                        boost::shared_ptr<UserResponseFactory> userResponseFactory,
+                        size_t maxSessionCount);
 
             ~LightningServerProcessor();
         public:
@@ -61,6 +62,7 @@ namespace Lightning
             void processClientClosedTask(const boost::shared_ptr<ProcessQueueItem>& requestTask);
             void processError(const boost::shared_ptr<ProcessQueueItem>& requestTask);
 
+            bool checkSessionCountToMax();
         private:
             boost::weak_ptr<event_base> mEventBase;
             boost::weak_ptr<SessionHandler> mSessionHandler;
@@ -72,6 +74,7 @@ namespace Lightning
 
             bool mRunning;
             int mIdleFd;
+            size_t mSessionMaxCount;
     };//class LightningServerProcessor
 }//namespace Lightning
 

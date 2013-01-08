@@ -70,4 +70,9 @@ void SessionManager::removedSession(SessionPtrType session)
         mSessionContainer.erase(found);
     }
 }
+
+size_t SessionManager::getSessionCount() const
+{
+    return mSessionContainer.size();
+}
 //------------------------------------------
