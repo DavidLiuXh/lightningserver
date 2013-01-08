@@ -154,6 +154,7 @@ class LightningServer::LightningServerImp
         void process();
         void addTimerEvent();
         bool regSessionHandler(SessionHandlerPtrType sessionHandler);
+        void setSessionMaxCount(size_t maxCount);
     private:
         UserRequestFactoryPtrType mRequestFactory;
         UserResponseFactoryPtrType mResponseFactory;
@@ -163,6 +164,7 @@ class LightningServer::LightningServerImp
         boost::scoped_ptr<LightningServerProcessor> mLSProcessor;
 
         bool mIsDebugMode;
+        size_t mMaxCountSession;
 };
 
 //------------------------------------------------------------------class LightningServer
@@ -181,6 +183,14 @@ LightningServer::~LightningServer()
 {
 }
 //------------------------------------------------------------------
+void LightningServer::setSessionMaxCount(size_t maxCount)
+{
+    if (mImp)
+    {
+        mImp->setSessionMaxCount(maxCount);
+    }
+}
+
 const char* LightningServer::getVersion()
 {
     return CURRENT_VERSION;
@@ -227,10 +237,15 @@ LightningServer::LightningServerImp::LightningServerImp(UserRequestFactoryPtrTyp
 :mRequestFactory(userRequestFactory)
 ,mResponseFactory(userResponseFactory)
     ,mIsDebugMode(isDebugMode)
+    ,mMaxCountSession(-1)
 {
     initLog(logPath);
 }
 
+void LightningServer::LightningServerImp::setSessionMaxCount(size_t maxCount)
+{
+    mMaxCountSession = maxCount;
+}
 
 bool LightningServer::LightningServerImp::regSessionHandler(SessionHandlerPtrType sessionHandler)
 {
@@ -263,7 +278,8 @@ bool LightningServer::LightningServerImp::setupEventBase()
                             mEventBase,
                             mSessionHandler,
                             mRequestFactory,
-                            mResponseFactory));
+                            mResponseFactory,
+                            mMaxCountSession));
             if (mLSProcessor)
             {
                 mLSProcessor->start();

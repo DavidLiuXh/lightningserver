@@ -29,6 +29,7 @@ namespace Lightning
             void removedSession(SessionPtrType session);
             void updateSession(boost::weak_ptr<SessionEntry> session);
             void freshTimeWheel();
+            size_t getSessionCount() const;
             
         private:
             class Entry;
