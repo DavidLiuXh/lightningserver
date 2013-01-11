@@ -2,6 +2,7 @@
 #define RRRTC_LOGGER_HXX
 
 #include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
