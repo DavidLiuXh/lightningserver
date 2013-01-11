@@ -22,7 +22,6 @@
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 
-
 namespace boost { namespace threadpool
 {
 
@@ -135,7 +134,11 @@ namespace boost { namespace threadpool
         if(m_break_s > 0 || m_break_ns > 0)
         { // Sleep some time before first execution
           xtime xt;
+#ifdef __APPLE_CC__
+          xtime_get(&xt, TIME_UTC_);
+#else
           xtime_get(&xt, TIME_UTC);
+#endif
           xt.nsec += m_break_ns;
           xt.sec += m_break_s;
           thread::sleep(xt); 
@@ -146,7 +149,11 @@ namespace boost { namespace threadpool
           if(m_break_s > 0 || m_break_ns > 0)
           {
             xtime xt;
+#ifdef __APPLE_CC__
+            xtime_get(&xt, TIME_UTC_);
+#else
             xtime_get(&xt, TIME_UTC);
+#endif
             xt.nsec += m_break_ns;
             xt.sec += m_break_s;
             thread::sleep(xt); 
@@ -160,8 +167,6 @@ namespace boost { namespace threadpool
     }
 
   }; // looped_task_func
-
-
 } } // namespace boost::threadpool
 
 #endif // THREADPOOL_TASK_ADAPTERS_HPP_INCLUDED
