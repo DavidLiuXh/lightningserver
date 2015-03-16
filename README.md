@@ -23,26 +23,26 @@
 
   2. 构建：
  
-     2.1 使用cmake系统;
-     2.2 目前编译了Debug版本和Release版本：
-         2.2.1 在源代码目录下新建 build 目录;
-         2.2.2 Debug编译：进入 build 目录，执行 cmake -DCMAKE_BUILD_TYPE=Debug ../；
-         2.2.3 Release编译：进入 build 目录，执行 cmake -DCMAKE_BUILD_TYPE=Release ../；
-         2.2.4 执行 make 命令, 生成可执行的测试文件;
-     2.3 测试客户端为python文件;
-         2.3.1 使用python 2.7版本；
-         2.3.2 测试程序 test/testClient.py
+     * 2.1 使用cmake系统;
+     * 2.2 目前编译了Debug版本和Release版本：
+         * 2.2.1 在源代码目录下新建 build 目录;
+         * 2.2.2 Debug编译：进入 build 目录，执行 cmake -DCMAKE_BUILD_TYPE=Debug ../；
+         * 2.2.3 Release编译：进入 build 目录，执行 cmake -DCMAKE_BUILD_TYPE=Release ../；
+         * 2.2.4 执行 make 命令, 生成可执行的测试文件;
+     * 2.3 测试客户端为python文件;
+         * 2.3.1 使用python 2.7版本；
+         * 2.3.2 测试程序 test/testClient.py
 
 三.历史版本：
 
   1. 版本0.0.5：
-     1.1 整理LightningServer类，隐藏实现细节，使头文件更简洁;
-     1.2 完善CMakeList.txt, 增回release编译;
-     1.3 添加include目录，用于放置用户使用的头文件。
+     * 1.1 整理LightningServer类，隐藏实现细节，使头文件更简洁;
+     * 1.2 完善CMakeList.txt, 增回release编译;
+     * 1.3 添加include目录，用于放置用户使用的头文件。
 
   2. 版本0.1.0：
-     2.1 增加setSessionMaxCount（默认为-1,表示不作限制）接口到LightningServer类，允许用户设置当前最大连接数;
-     2.2 添加了对accept返回EMFILE或ENFILE的处理。
+     * 2.1 增加setSessionMaxCount（默认为-1,表示不作限制）接口到LightningServer类，允许用户设置当前最大连接数;
+     * 2.2 添加了对accept返回EMFILE或ENFILE的处理。
 
   3. 版本0.1.1：
-     3.1 支持mac系统编译.
+     * 3.1 支持mac系统编译.
