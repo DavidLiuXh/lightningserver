@@ -17,7 +17,7 @@ DataStreamHandler::DataStreamHandler()
 //-----------------------------------------------
 void DataStreamHandler::setUserRequest(boost::shared_ptr<UserRequest> request)
 {
-    mUserRequest = boost::shared_dynamic_cast<UserRequestWithHeader>(request);
+    mUserRequest = boost::dynamic_pointer_cast<UserRequestWithHeader>(request);
     if (mUserRequest)
     {
         mHeaderSize = mUserRequest->getHeaderSize();

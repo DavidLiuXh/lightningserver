@@ -25,7 +25,7 @@ DataLineHandler::DataLineHandler()
 //-----------------------------------------
 void DataLineHandler::setUserRequest(boost::shared_ptr<UserRequest> request)
 {
-    mUserRequest = boost::shared_dynamic_cast<UserRequestWithLine>(request);
+    mUserRequest = boost::dynamic_pointer_cast<UserRequestWithLine>(request);
 }
 
 void DataLineHandler::pushData(evbuffer* buffer)

@@ -31,6 +31,7 @@
 #include <boost/bind.hpp>
 //----------------------------------------------------
 const int MAX_WORK_THREAD_COUNT = 5;
+const size_t kInvaildCount = -1;
 //----------------------------------------------------
 using namespace Lightning;
 //----------------------------------------------------
@@ -122,7 +123,7 @@ bool LightningServerProcessor::checkSessionCountToMax()
 {
     bool rt = false;
 
-    if (-1 != mSessionMaxCount &&
+    if (kInvaildCount != mSessionMaxCount &&
                 mSessionManager &&
                 mSessionManager->getSessionCount() == mSessionMaxCount)
     {
@@ -287,7 +288,7 @@ void LightningServerProcessor::handleResponseEvent(const boost::shared_ptr<Proce
 {
     DEBUG(__FUNCTION__);
  
-    boost::shared_ptr<Response> response = boost::shared_dynamic_cast<Response>(
+    boost::shared_ptr<Response> response = boost::dynamic_pointer_cast<Response>(
                 requestTask);
     if (response)
     {
@@ -353,7 +354,7 @@ void LightningServerProcessor::onError(boost::shared_ptr<Session> session, Sessi
 void LightningServerProcessor::processStartTask(const boost::shared_ptr<ProcessQueueItem>& requestTask)
 {
     boost::shared_ptr<StartRequestTask> startTask =
-        boost::shared_dynamic_cast<StartRequestTask>(requestTask);
+        boost::dynamic_pointer_cast<StartRequestTask>(requestTask);
     boost::shared_ptr<SessionHandler> sessonHandler = mSessionHandler.lock();
     if (startTask && sessonHandler) 
     {
@@ -372,7 +373,7 @@ void LightningServerProcessor::processStartTask(const boost::shared_ptr<ProcessQ
 void LightningServerProcessor::processClientClosedTask(const boost::shared_ptr<ProcessQueueItem>& requestTask)
 {
     boost::shared_ptr<ClientClosedTask> clientClosedTask =
-        boost::shared_dynamic_cast<ClientClosedTask>(requestTask);
+        boost::dynamic_pointer_cast<ClientClosedTask>(requestTask);
     boost::shared_ptr<SessionHandler> sessonHandler = mSessionHandler.lock();
     if (clientClosedTask && sessonHandler) 
     {
@@ -388,7 +389,7 @@ void LightningServerProcessor::processClientClosedTask(const boost::shared_ptr<P
 void LightningServerProcessor::processRequestTask(const boost::shared_ptr<ProcessQueueItem>& requestTask)
 {
     boost::shared_ptr<ReceivedRequestTask> task =
-        boost::shared_dynamic_cast<ReceivedRequestTask>(requestTask);
+        boost::dynamic_pointer_cast<ReceivedRequestTask>(requestTask);
     boost::shared_ptr<SessionHandler> sessonHandler = mSessionHandler.lock();
     if (task && sessonHandler)
     {
@@ -424,7 +425,7 @@ void LightningServerProcessor::processRequestTask(const boost::shared_ptr<Proces
 void LightningServerProcessor::processError(const boost::shared_ptr<ProcessQueueItem>& requestTask)
 {
     boost::shared_ptr<ErrorTask> errorTask =
-        boost::shared_dynamic_cast<ErrorTask>(requestTask);
+        boost::dynamic_pointer_cast<ErrorTask>(requestTask);
     boost::shared_ptr<SessionHandler> sessonHandler = mSessionHandler.lock();
     if (errorTask && sessonHandler) 
     {
