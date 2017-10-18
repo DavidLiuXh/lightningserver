@@ -16,8 +16,8 @@
 二.编译：
 
   1. 依赖的库：
-     * 1.1 boost 1.51.0 及其以上;
-     * 1.2 ibevent-2.0.20;
+     * 1.1 boost 1.58.0 及其以上;
+     * 1.2 libevent-2.0.20;
      * 1.3 log4cplus;
      * 1.4 google tcmalloc;
 
